@@ -1,32 +1,32 @@
-function getGrade(marks) {
-    // Validate input (0 to 100)
-    if (marks < 0 || marks > 100) {
-      return "Invalid marks. Enter a value between 0 and 100.";
-    }
-  
-    // Determine grade based on marks
+const readline = require('readline');
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+rl.question('Enter student marks (between 0 and 100): ', (marks) => {
+  marks = parseFloat(marks);
+
+  if (marks >= 0 && marks <= 100) {
+    let grade = '';
+
     if (marks > 79) {
-      return "Grade: A";
-    } else if (marks >= 60) {
-      return "Grade: B";
-    } else if (marks >= 49) {
-      return "Grade: C";
-    } else if (marks >= 40) {
-      return "Grade: D";
+      grade = 'A';
+    } else if (marks >= 60 && marks <= 79) {
+      grade = 'B';
+    } else if (marks >= 49 && marks <= 59) {
+      grade = 'C';
+    } else if (marks >= 40 && marks <= 49) {
+      grade = 'D';
     } else {
-      return "Grade: E";
+      grade = 'E';
     }
-  }
-  
-  // Ask user for input
-  const marks = 74;
-  
-  // Get and display the grade
-  const grade = getGrade(marks);
-  console.log(grade);
-  
-  // Example output
-  if (marks !== undefined && !isNaN(marks)) { // Check for valid input
-    console.log("Marks entered:", marks);
+
+    console.log(`Grade: ${grade}`);
+  } else {
+    console.log('Invalid input. Marks should be between 0 and 100.');
   }
 
+  rl.close();
+});

@@ -1,40 +1,49 @@
-function calculateNetSalary() {
-    // Get values
-    const basicSalary = parseFloat(document.getElementById("basicSalary").value);
-    const benefits = parseFloat(document.getElementById("benefits").value);
-  
-    // Calculate the gross salary
-    const grossSalary = basicSalary + benefits;
-  
-    // Define tax calculation 
-    function calculateTax(grossSalary) {
+const readline = require('readline');
 
-      return grossSalary * 0.1;
-    }
-  
-    // Define the NHIF deduction calculation 
-    function calculateNHIFDeductions(grossSalary) {
-      
-      if (grossSalary <= 5999) {
-        return 150;
-      } else if (grossSalary <= 99,999) { 
-        return grossSalary * 0.015;
-      } else {
-        return Math.min(grossSalary * 0.015, 1700); // Replace 'nhifMaximum' with your country's NHIF maximum deduction
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+// Tax rates from the provided link
+const taxRates = {
+  incomeTax: {
+    range1: { min: 0, max: 24586, rate: 10 },
+    range2: { min: 24587, max: 70833, rate: 15 },
+    range3: { min: 70834, max: 141667, rate: 20 },
+    range4: { min: 141668, max: 235833, rate: 25 },
+    range5: { min: 235834, max: 327083, rate: 30 },
+    range6: { min: 327084, max: Infinity, rate: 35 }
+  },
+  nhif: 1700,
+  nssf: 200
+};
+
+rl.question('Enter basic salary: ', (basicSalary) => {
+  rl.question('Enter benefits: ', (benefits) => {
+    const grossSalary = parseFloat(basicSalary) + parseFloat(benefits);
+
+    // Calculate PAYE
+    let paye = 0;
+    for (const range in taxRates.incomeTax) {
+      const { min, max, rate } = taxRates.incomeTax[range];
+      if (grossSalary >= min && grossSalary <= max) {
+        paye = (grossSalary - min) * (rate / 100);
+        break;
       }
     }
-  
-    // Define NSSF deduction calculation 
-    function calculateNSSFDeductions(grossSalary) {
-      
-      return 200;
-    }
-    // Calculate the deductions
-  const payee = calculateTax(grossSalary);
-  const nhifDeductions = calculateNHIFDeductions(grossSalary);
-  const nssfDeductions = calculateNSSFDeductions(grossSalary);
-  const totalDeductions = payee + nhifDeductions + nssfDeductions;
 
-  // Calculate net salary
-  const netSalary = grossSalary - totalDeductions;
-}
+    // Calculate net salary
+    const nhifDeductions = taxRates.nhif;
+    const nssfDeductions = taxRates.nssf;
+    const netSalary = grossSalary - paye - nhifDeductions - nssfDeductions;
+
+    console.log(`Gross Salary: KES ${grossSalary}`);
+    console.log(`PAYE: KES ${paye}`);
+    console.log(`NHIF Deductions: KES ${nhifDeductions}`);
+    console.log(`NSSF Deductions: KES ${nssfDeductions}`);
+    console.log(`Net Salary: KES ${netSalary}`);
+
+    rl.close();
+  });
+});

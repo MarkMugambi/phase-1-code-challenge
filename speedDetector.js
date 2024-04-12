@@ -1,20 +1,28 @@
-(function checkSpeed(speed) { 
+const readline = require('readline');
 
-    const speedLimit = 70;
-    let demeritPoints = 0;
-  
-    // Calculate demerit points (consider speed limit and increments of 5)
-    if (speed > speedLimit) {
-      const excessSpeed = speed - speedLimit;
-      demeritPoints = Math.floor(excessSpeed / 5);
-    }
-  
-    // Print output based on demerit points
-    if (demeritPoints === 0) {
-      console.log("Ok");
-    } else if (demeritPoints <= 12) {
-      console.log("Points:", demeritPoints);
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+rl.question('Enter the speed of the car: ', (speed) => {
+  speed = parseFloat(speed);
+
+  const speedLimit = 70;
+  const kmPerDemeritPoint = 5;
+  const demeritPointsThreshold = 12;
+
+  if (speed <= speedLimit) {
+    console.log('Ok');
+  } else {
+    const demeritPoints = Math.floor((speed - speedLimit) / kmPerDemeritPoint);
+
+    if (demeritPoints > demeritPointsThreshold) {
+      console.log('License suspended');
     } else {
-      console.log("License suspended");
+      console.log(`Points: ${demeritPoints}`);
     }
-    })(170);
+  }
+
+  rl.close();
+});
